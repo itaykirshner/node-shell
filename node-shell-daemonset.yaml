@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-shell
+  namespace: default
+  labels:
+    k8s-app: node-shell
+spec:
+  selector:
+    matchLabels:
+      name: node-shell
+  template:
+    metadata:
+      labels:
+        name: node-shell
+    spec:
+      containers:
+      - image: gcr.io/iguazio/node-shell:0.1
+        imagePullPolicy: IfNotPresent
+        name: node-shell
+        command: ["sleep", "infinity"]
+        resources: {}
+        stdin: true
+        tty: true
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /host
+          name: host-root
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      hostIPC: true
+      hostNetwork: true
+      hostPID: true
+      preemptionPolicy: PreemptLowerPriority
+      priority: 0
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /
+          type: ""
+        name: host-root
