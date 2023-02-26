@@ -1,5 +1,3 @@
-#!/bin/sh
-
 showHelp()
 {
    # Display Help
@@ -32,27 +30,32 @@ deleteNodeShell() {
 
 showLogs() {
     # get the name of the node the pod is running on
-	node=kubectl get pods -A -owide | grep $1 | awk '{print $8}'
-	
-	
+        node=kubectl get pods -A -owide | grep $1 | awk '{print $8}'
+
+
 }
 
 # arg opts
 while getopts :n:c:l:idh flag
 do
     case "${flag}" in
-        n) node=${OPTARG};;
-        c) cmd="${OPTARG}";;
+        n) node=${OPTARG}
+           ;;
+        c) cmd="${OPTARG}"
+           ;;
         l) pod=${OPTARG}
            node=`kubectl get pods -A -owide | grep $pod | awk '{print $8}'`
            cmd="logs"
-		   ;;
+           ;;
         i) installNodeShell
-           exit;;
+           exit
+           ;;
         d) deleteNodeShell
-           exit;;
+           exit
+           ;;
         h) showHelp
-           exit;;
+           exit
+           ;;
     esac
 done
 if (( $OPTIND == 1 )); then
@@ -72,7 +75,7 @@ fi
 if [ "$cmd" = "bash" ] || [ "$cmd" = "sh" ]; then
     kubectl -n default exec -it ${node_shell_pod_and_status[0]} -- $cmd
 elif [ "$cmd" = "logs" ]; then
-    kubectl -n default exec -it ${node_shell_pod_and_status[0]} -- ns logs $pod
+    kubectl -n default exec -it ${node_shell_pod_and_status[0]} -- ns logs $pod | grep -v sh-[0-9+\.]
 else
     kubectl -n default exec -it ${node_shell_pod_and_status[0]} -- ns -c \""$cmd"\" | grep -v sh-[0-9+\.]
 fi
