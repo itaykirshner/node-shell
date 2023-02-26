@@ -26,7 +26,7 @@ Extras:
 
 ## External Utility ##
 In version 0.2 a small external utility was added to make things a even simpler, so using node-shell is now easier to understand, and no longer requires figuring out the names of the node-shell pod running on specific nodes.
-The utility, named node-shell-wrapper.sh, is meant to be installed in <dir in system path>/ns (e.g. /usr/local/bin/ns). Here's its help message to shed light on usage:
+The utility, named node-shell-wrapper.sh, is meant to be installed in /usr/local/bin/ns. Here's its help message to shed light on usage:
 ```
 node-shell: run commands on k8s hosts
 
