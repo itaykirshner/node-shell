@@ -15,7 +15,7 @@ spec:
         name: node-shell
     spec:
       containers:
-      - image: gcr.io/iguazio/node-shell:0.1
+      - image: gcr.io/iguazio/node-shell:0.2
         imagePullPolicy: IfNotPresent
         name: node-shell
         command: ["sleep", "infinity"]
