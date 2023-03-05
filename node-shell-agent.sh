@@ -14,18 +14,7 @@ function print_help() {
   echo -e "\tns -c \"service kubelet restart\""
   echo -e "\tns -c \"nslookup www.google.com\""
   echo
-  echo -e "Extras:"
-  echo -e "\tnode-shell logs <pod name> - View complete logs of a pod's containers (supported on AKS)"
-  echo
   exit
-}
-
-function logs_cmd() {
-  if [ -z "$1" ]; then
-    print_help
-    exit
-  fi
-  docker-logs $1
 }
 
 if [ $# -eq 0 ]
@@ -33,11 +22,6 @@ if [ $# -eq 0 ]
     print_help
     exit
 fi
-
-case "$1" in
-  "logs") logs_cmd $2
-  ;;
-esac
 
 while getopts c: flag
 do
