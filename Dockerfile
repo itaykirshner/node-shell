@@ -13,4 +13,5 @@ RUN apt -y install iperf3
 COPY node-shell-agent.sh /usr/local/bin/node-shell
 COPY docker-logs.sh /usr/local/bin/docker-logs
 
+RUN chmod a+x /usr/local/bin/node-shell
 RUN ln -s /usr/local/bin/node-shell /usr/local/bin/ns
