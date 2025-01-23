@@ -1,0 +1,61 @@
+#!/usr/bin/env sh
+set -e
+
+declare -a nodes
+_list_nodes() {
+  nodes=(`kubectl get nodes --no-headers | grep -v NotReady | awk '{print $1}'`)
+  if [[ -z ${nodes[@]} ]]; then
+    echo "Could not list nodes. Aborting."
+    exit 1
+  fi
+}
+_list_nodes
+
+node="$1"
+if [ -z "$node" ]; then
+  echo "Missing node name. Ready nodes: ${nodes[*]}"
+  exit 1
+fi
+
+# Check that the node name is valid
+if [[ -z $(echo ${nodes[@]} | fgrep -w $node) ]]; then
+  echo "Invalid node name or node is not ready."
+  exit 1
+fi
+
+# If we're here then the node was found and we're good to launch our shell pod
+pod="shell-${node%%.*}"
+image="alpine"
+
+echo "Launching shell pod $pod on node $node"
+
+overrides="$(
+cat <<EOT
+{
+  "spec": {
+    "nodeName": "$node",
+    "hostPID": true,
+    "hostIPC": true,
+    "hostNetwork": true,
+    "containers": [
+      {
+        "securityContext": {"privileged":true},
+        "image": "$image",
+        "name": "shell",
+        "stdin": true,
+        "stdinOnce": true,
+        "tty": true,
+        "command": [ "nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid" , "bash", "-l" ]
+      }
+    ],
+    "tolerations": [
+      { "key": "CriticalAddonsOnly", "operator": "Exists" },
+      { "effect": "NoExecute",       "operator": "Exists" }
+    ]
+  }
+}
+EOT
+)"
+
+trap "EC=\$?; kubectl delete pod --wait=false $pod >&2 || true; exit \$EC" EXIT INT TERM
+kubectl run --image="$image" --restart=Never --overrides="$overrides" -it "$pod"
