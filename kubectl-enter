@@ -41,6 +41,7 @@ cat <<EOT
       {
         "securityContext": {"privileged":true},
         "image": "$image",
+        "imagePullPolicy": "IfNotPresent",
         "name": "shell",
         "stdin": true,
         "stdinOnce": true,
